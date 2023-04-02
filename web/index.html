@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>FruitList</title>
+    <link rel="stylesheet" href="./css/index.css">
+    <script src="./js/index.js"></script>
+    <script src="./js/addFruit.js"></script>
+</head>
+<body>
+<div id="div_container">
+    <div id="div_fruit_list">
+        <div class="add_fruit_container">
+            <button class="add_fruit_button" th:text="AddFruit" th:onclick="|addFruit()|"></button>
+        </div>
+        <br>
+        <div class="search_by_keyword_container">
+            <form th:action="@{/fruit.do}" method="post">
+            Please input the keyword:
+            <input type="hidden" name="oper" value="search">
+            <input id="search_name_keyword" type="text" name="search_keyword" th:value="${session.search_keyword}">
+            <input type="submit" value="Search">
+            </form>
+        </div>
+        <br>
+        <table id="tbl_fruit">
+            <tr>
+                <th class="w20">Name</th>
+                <th class="w20">Price</th>
+                <th class="w20">Inventory</th>
+                <th class="w20">Remark</th>
+                <th class="w20">删除</th>
+            </tr>
+            <tr th:if="${#lists.isEmpty(session.fruit_list)}">
+                <td colspan="5">Empty!</td>
+            </tr>
+            <tr th:unless="${#lists.isEmpty(session.fruit_list)}" th:each="fruit : ${session.fruit_list}"
+                th:object="${fruit}">
+                <!--                <td><a th:text="${fruit.name}" th:href="@{'edit.do?id=' + ${fruit.name}}"/></td>-->
+                <td class="name"><a th:text="*{name}" th:href="@{fruit.do(name=*{name}, operate='edit')}"/></td>
+                <td class="price" th:text="*{price}"></td>
+                <td class="inventory" th:text="*{inventory}"></td>
+                <td class="remark" th:text="*{remark}"></td>
+                <td class="delete_fruit" th:onclick="|deleteFruit(*{id})|"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="page_limit">
+        <input type="button" class="change_page head_page" value="首页"
+               th:onclick="|toPage(1)|"
+               th:disabled="${session.curPageNo == 1}">
+        <input type="button" class="change_page previous_page" value="上一页"
+               th:onclick="|toPage(${session.curPageNo - 1})|"
+               th:disabled="${session.curPageNo == 1}">
+        <input type="button" class="change_page next_page" value="下一页"
+               th:onclick="|toPage(${session.curPageNo + 1})|"
+               th:disabled="${session.curPageNo == session.totalPage}">
+        <input type="button" class="change_page tail_page" value="尾页"
+               th:onclick="|toPage(${session.totalPage})|"
+               th:disabled="${session.curPageNo == session.totalPage}">
+    </div>
+</div>
+</body>
+</html>
